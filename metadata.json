@@ -1,0 +1,7 @@
+{
+  "name": "Ramdinesh Boopalan - Portfolio",
+  "description": "Personal website for Ramdinesh Boopalan, CTO & AI Product Strategist, showcasing ventures, portfolio, and thought leadership.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
