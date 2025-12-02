@@ -1,42 +1,87 @@
 
-import React, { useState } from 'react';
-import { Send, ArrowRight, Loader2, CheckCircle, Mail } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Send, ArrowRight, Loader2, CheckCircle, Mail, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 
 const Contact: React.FC = () => {
-  const [status, setStatus] = useState<'idle' | 'sending' | 'success'>('idle');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('sending');
-    
-    // Simulate network transmission time
-    setTimeout(() => {
+    setErrorMessage('');
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      setStatus('error');
+      setErrorMessage('Email configuration missing. Please check environment variables.');
+      return;
+    }
+
+    try {
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          reply_to: formData.email,
+          to_name: 'Ramdinesh Boopalan',
+          to_email: 'ramdineshboopalan@outlook.com',
+          message: formData.message,
+        },
+        publicKey
+      );
+
       setStatus('success');
-      // Reset to idle after showing success message
-      setTimeout(() => setStatus('idle'), 3000);
-    }, 1500);
+      setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setStatus('idle'), 5000);
+    } catch (error) {
+      console.error('EmailJS Error:', error);
+      setStatus('error');
+      const errorMsg = error instanceof Error ? error.message : JSON.stringify(error);
+      setErrorMessage(`Transmission failed: ${errorMsg}`);
+      // setTimeout(() => setStatus('idle'), 5000); // Keep error visible for debugging
+    }
   };
 
   return (
     <section id="contact" className="py-32 bg-void relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-      
+
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
-           initial={{ opacity: 0, scale: 0.9 }}
-           whileInView={{ opacity: 1, scale: 1 }}
-           viewport={{ once: true }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
         >
-           <h2 className="text-6xl md:text-8xl lg:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 tracking-tighter mb-12">
-             SAY HELLO.
-           </h2>
+          <h2 className="text-6xl md:text-8xl lg:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 tracking-tighter mb-12">
+            SAY HELLO.
+          </h2>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start max-w-4xl mx-auto">
           <div className="text-left">
             <p className="text-xl text-slate-400 leading-relaxed mb-8">
-              Got an idea that needs <span className="text-white font-bold">AI firepower</span>? 
+              Got an idea that needs <span className="text-white font-bold">AI firepower</span>?
               Or just want to discuss the future of tech? I'm always open to interesting conversations.
             </p>
             <div className="flex flex-col gap-4">
@@ -52,96 +97,114 @@ const Contact: React.FC = () => {
           {/* Minimalist Form */}
           <div className="bg-surface border border-white/10 p-8 relative min-h-[420px] flex flex-col justify-center rounded-xl shadow-2xl">
             <AnimatePresence mode="wait">
-               {status === 'success' ? (
-                 <motion.div 
-                    key="success"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center p-8"
-                 >
-                    <motion.div
-                        initial={{ scale: 0, rotate: -45 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                        className="mb-6 text-neon"
-                    >
-                        <CheckCircle className="w-20 h-20" />
-                    </motion.div>
-                    <motion.h3 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-3xl font-bold text-white mb-2"
-                    >
-                        Received.
-                    </motion.h3>
-                    <motion.p 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-slate-500 font-mono text-sm"
-                    >
-                        Transmission Confirmed.
-                    </motion.p>
-                 </motion.div>
-               ) : (
-                 <motion.form 
-                    key="form"
+              {status === 'success' ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="absolute inset-0 flex flex-col items-center justify-center p-8"
+                >
+                  <motion.div
+                    initial={{ scale: 0, rotate: -45 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                    className="mb-6 text-neon"
+                  >
+                    <CheckCircle className="w-20 h-20" />
+                  </motion.div>
+                  <motion.h3
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="text-3xl font-bold text-white mb-2"
+                  >
+                    Received.
+                  </motion.h3>
+                  <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onSubmit={handleSubmit} 
-                    className="space-y-5 w-full"
-                 >
-                    <div className="space-y-1 text-left">
-                      <label className="text-xs font-mono text-slate-500 uppercase tracking-wider">Identity</label>
-                      <input 
-                        type="text" 
-                        placeholder="Name"
-                        required
-                        className="w-full bg-void border-b border-white/20 py-3 px-2 text-white focus:outline-none focus:border-neon transition-colors placeholder:text-slate-700"
-                      />
+                    transition={{ delay: 0.2 }}
+                    className="text-slate-500 font-mono text-sm"
+                  >
+                    Transmission Confirmed.
+                  </motion.p>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  ref={formRef}
+                  onSubmit={handleSubmit}
+                  className="space-y-5 w-full"
+                >
+                  <div className="space-y-1 text-left">
+                    <label className="text-xs font-mono text-slate-500 uppercase tracking-wider">Identity</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Name"
+                      required
+                      className="w-full bg-void border-b border-white/20 py-3 px-2 text-white focus:outline-none focus:border-neon transition-colors placeholder:text-slate-700"
+                    />
+                  </div>
+                  <div className="space-y-1 text-left">
+                    <label className="text-xs font-mono text-slate-500 uppercase tracking-wider">Coordinates</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Email"
+                      required
+                      className="w-full bg-void border-b border-white/20 py-3 px-2 text-white focus:outline-none focus:border-neon transition-colors placeholder:text-slate-700"
+                    />
+                  </div>
+                  <div className="space-y-1 text-left">
+                    <label className="text-xs font-mono text-slate-500 uppercase tracking-wider">Transmission</label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder="Message"
+                      rows={3}
+                      required
+                      className="w-full bg-void border-b border-white/20 py-3 px-2 text-white focus:outline-none focus:border-neon transition-colors resize-none placeholder:text-slate-700"
+                    ></textarea>
+                  </div>
+
+                  {status === 'error' && (
+                    <div className="text-red-400 text-xs flex items-center gap-2">
+                      <AlertCircle className="w-3 h-3" />
+                      {errorMessage}
                     </div>
-                    <div className="space-y-1 text-left">
-                      <label className="text-xs font-mono text-slate-500 uppercase tracking-wider">Coordinates</label>
-                      <input 
-                        type="email" 
-                        placeholder="Email"
-                        required
-                        className="w-full bg-void border-b border-white/20 py-3 px-2 text-white focus:outline-none focus:border-neon transition-colors placeholder:text-slate-700"
-                      />
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={status === 'sending'}
+                    className="w-full bg-white text-black font-bold py-4 mt-4 hover:bg-neon transition-all disabled:bg-zinc-800 disabled:text-zinc-400 disabled:cursor-not-allowed group relative overflow-hidden rounded-sm"
+                  >
+                    <div className="relative z-10 flex items-center justify-center gap-2">
+                      {status === 'sending' ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span className="font-mono tracking-widest text-xs">TRANSMITTING...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="tracking-widest text-xs">INITIATE SEQUENCE</span>
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </>
+                      )}
                     </div>
-                    <div className="space-y-1 text-left">
-                      <label className="text-xs font-mono text-slate-500 uppercase tracking-wider">Transmission</label>
-                      <textarea 
-                        placeholder="Message"
-                        rows={3}
-                        required
-                        className="w-full bg-void border-b border-white/20 py-3 px-2 text-white focus:outline-none focus:border-neon transition-colors resize-none placeholder:text-slate-700"
-                      ></textarea>
-                    </div>
-                    <button 
-                      type="submit"
-                      disabled={status === 'sending'}
-                      className="w-full bg-white text-black font-bold py-4 mt-4 hover:bg-neon transition-all disabled:bg-zinc-800 disabled:text-zinc-400 disabled:cursor-not-allowed group relative overflow-hidden rounded-sm"
-                    >
-                      <div className="relative z-10 flex items-center justify-center gap-2">
-                        {status === 'sending' ? (
-                            <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                <span className="font-mono tracking-widest text-xs">TRANSMITTING...</span>
-                            </>
-                        ) : (
-                            <>
-                                <span className="tracking-widest text-xs">INITIATE SEQUENCE</span>
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </>
-                        )}
-                      </div>
-                    </button>
-                 </motion.form>
-               )}
+                  </button>
+                </motion.form>
+              )}
             </AnimatePresence>
           </div>
         </div>
