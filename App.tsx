@@ -8,6 +8,7 @@ import Portfolio from './components/Portfolio';
 import ModelTraining from './components/ModelTraining';
 import Writing from './components/Writing';
 import Books from './components/Books';
+import Certifications from './components/Certifications';
 import CreativeWorks from './components/CreativeWorks';
 import GlobalFootprint from './components/GlobalFootprint';
 import SocialPortal from './components/SocialPortal';
@@ -21,7 +22,7 @@ function App() {
   useEffect(() => {
     // Update HTML attribute for CSS variables
     document.documentElement.setAttribute('data-theme', theme);
-    
+
     // Update browser theme color for mobile bars/browser UI
     const metaThemeColor = document.querySelector("meta[name=theme-color]");
     if (metaThemeColor) {
@@ -43,6 +44,7 @@ function App() {
         <Ventures />
         <Portfolio />
         <ModelTraining />
+        <Certifications />
         <CreativeWorks />
         <Books />
         <Writing />
