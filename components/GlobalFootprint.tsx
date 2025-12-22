@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { MapPin, Globe2, Clock, Navigation, Zap } from 'lucide-react';
+import { MapPin, Globe2, Clock, Zap, Activity, Signal } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const GlobalFootprint: React.FC = () => {
@@ -9,134 +10,118 @@ const GlobalFootprint: React.FC = () => {
   const [permissionStatus, setPermissionStatus] = useState<'prompt' | 'granted' | 'denied'>('prompt');
 
   useEffect(() => {
-    // 1. Time Update Logic
     const updateTime = () => {
       const now = new Date();
       setUserTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
       setChennaiTime(now.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'Asia/Kolkata'
+        hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata'
       }));
     };
-
     updateTime();
     const timer = setInterval(updateTime, 1000);
 
-    // 2. Geolocation Logic
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        () => {
           setPermissionStatus('granted');
           try {
             const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            if (timeZone && timeZone.includes('/')) {
-              const parts = timeZone.split('/');
-              const city = parts[parts.length - 1].replace(/_/g, ' ');
-              const region = parts[0];
-              setLocationName(`${city}, ${region}`);
-            } else {
-              setLocationName("your region");
-            }
-          } catch (e) {
-            setLocationName("your region");
-          }
+            const parts = timeZone.split('/');
+            setLocationName(`${parts[parts.length - 1].replace(/_/g, ' ')}, ${parts[0]}`);
+          } catch (e) { setLocationName("your region"); }
         },
-        (error) => {
-          console.log("Geo permission denied or error", error);
-          setPermissionStatus('denied');
-        }
+        () => setPermissionStatus('denied')
       );
-    } else {
-      setPermissionStatus('denied');
     }
 
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <section className="py-20 bg-surface border-y border-white/5 relative overflow-hidden">
-      {/* Abstract Background Globe Effect */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center">
-        <div className="w-[800px] h-[800px] border border-white/20 rounded-full flex items-center justify-center">
-             <div className="w-[600px] h-[600px] border border-white/20 rounded-full flex items-center justify-center">
-                <div className="w-[400px] h-[400px] border border-white/20 rounded-full"></div>
-             </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-        <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-6">
-          <Globe2 className="w-6 h-6 text-primary" />
-        </div>
+    <section id="network" className="py-32 bg-void relative overflow-hidden border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Where I Work & Collaborate</h2>
-        
-        {/* Dynamic Geo-Greeting Banner */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto mb-12 bg-void/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl"
-        >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-left flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`w-2 h-2 rounded-full ${permissionStatus === 'granted' ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`}></div>
-                <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
-                  {permissionStatus === 'granted' ? 'Location Active' : 'System Status: Online'}
-                </span>
-              </div>
-              <p className="text-slate-200 text-lg font-medium leading-relaxed">
-                {permissionStatus === 'granted' ? (
-                  <>
-                    Hello from Ramdinesh in <span className="text-primary font-bold">Chennai, India</span> 👋 <br />
-                    You’re visiting from <span className="text-white border-b border-white/20">{locationName || "your region"}</span>.
-                  </>
-                ) : (
-                  <>
-                     Hello from <span className="text-primary font-bold">Chennai, India</span> 👋 <br />
-                     Wherever you’re joining from, welcome to my AI-powered world.
-                  </>
-                )}
-              </p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+          
+          <div className="lg:col-span-5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-neon/5 border border-neon/20 rounded-full text-[10px] font-mono text-neon uppercase tracking-widest mb-8">
+              <Signal className="w-3 h-3 animate-pulse" /> LIVE_NETWORK_STATUS
             </div>
+            <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tighter leading-none">
+              GLOBAL <br /> <span className="text-slate-500">SIGNAL GRID</span>
+            </h2>
+            <p className="text-slate-400 text-lg font-light leading-relaxed mb-12">
+              The Architect's presence is distributed. My operations center in Chennai coordinates with partners across every major digital sector.
+            </p>
 
-            <div className="flex gap-6 md:border-l border-white/10 md:pl-6">
-              <div className="text-center">
-                <div className="text-xs text-slate-500 mb-1 flex items-center justify-center gap-1">
-                  <Clock className="w-3 h-3" /> You
-                </div>
-                <div className="text-xl font-mono text-white font-bold">{userTime || "--:--"}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-slate-500 mb-1 flex items-center justify-center gap-1">
-                  <MapPin className="w-3 h-3" /> Me (Chennai)
-                </div>
-                <div className="text-xl font-mono text-primary font-bold">{chennaiTime || "--:--"}</div>
-              </div>
+            <div className="grid grid-cols-2 gap-4">
+               <div className="p-6 bg-surface border border-white/5 rounded-2xl">
+                  <div className="text-[10px] font-mono text-slate-500 uppercase mb-2 flex items-center gap-2">
+                    <Clock className="w-3 h-3" /> System_Time
+                  </div>
+                  <div className="text-2xl font-bold text-white font-mono">{chennaiTime}</div>
+                  <div className="text-[10px] font-mono text-neon mt-1">CHENNAI_HQ</div>
+               </div>
+               <div className="p-6 bg-surface border border-white/5 rounded-2xl">
+                  <div className="text-[10px] font-mono text-slate-500 uppercase mb-2 flex items-center gap-2">
+                    <MapPin className="w-3 h-3" /> User_Node
+                  </div>
+                  <div className="text-2xl font-bold text-white font-mono truncate">{userTime || "--:--"}</div>
+                  <div className="text-[10px] font-mono text-slate-500 mt-1 uppercase truncate">{locationName || "Detecting..."}</div>
+               </div>
             </div>
           </div>
-        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <div className="p-6 bg-void rounded-2xl border border-white/5 hover:border-primary/30 transition-colors group">
-             <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🇮🇳</div>
-             <h3 className="text-xl font-bold text-white mb-1">Chennai, India</h3>
-             <p className="text-sm text-slate-500">Base of Operations</p>
+          <div className="lg:col-span-7 relative">
+            <div className="relative aspect-[16/10] bg-surface/30 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 overflow-hidden group">
+               {/* World Map SVG Representation */}
+               <svg viewBox="0 0 1000 600" className="w-full h-full opacity-20 transition-opacity group-hover:opacity-40 duration-700">
+                  <path d="M150,200 Q200,100 300,150 T500,200 T700,150 T900,250" fill="none" stroke="white" strokeWidth="1" strokeDasharray="4 4" className="animate-pulse" />
+                  {/* Chennai Node */}
+                  <circle cx="720" cy="350" r="4" fill="#ccff00" className="animate-ping" />
+                  <circle cx="720" cy="350" r="2" fill="#ccff00" />
+                  <text x="735" y="355" fill="white" fontSize="12" fontFamily="Space Mono" fontWeight="bold">HQ_CHENNAI</text>
+                  
+                  {/* Other Nodes */}
+                  <circle cx="200" cy="250" r="2" fill="white" className="opacity-40" />
+                  <circle cx="850" cy="400" r="2" fill="white" className="opacity-40" />
+                  <circle cx="450" cy="180" r="2" fill="white" className="opacity-40" />
+
+                  {/* User Pulse (Dynamic-ish) */}
+                  <motion.g animate={{ opacity: [0, 1, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                    <circle cx="300" cy="300" r="6" stroke="#ccff00" strokeWidth="1" fill="none" />
+                    <text x="315" y="305" fill="#ccff00" fontSize="10" fontFamily="Space Mono">VISITOR_SIGNAL</text>
+                  </motion.g>
+               </svg>
+
+               <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent pointer-events-none"></div>
+               
+               {/* Data HUD overlay */}
+               <div className="absolute top-8 right-8 text-right font-mono text-[10px] space-y-2">
+                  <div className="text-neon flex items-center justify-end gap-2">
+                    <Activity className="w-3 h-3" /> PACKET_STRENGTH: 99.8%
+                  </div>
+                  <div className="text-slate-500">NODE_COUNT: 1,422</div>
+                  <div className="text-slate-500">UPTIME: 9,999.42 HRS</div>
+               </div>
+
+               <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end border-t border-white/10 pt-6">
+                  <div className="flex gap-4">
+                     {[1,2,3,4].map(i => (
+                       <div key={i} className="w-1 bg-white/10 h-8 rounded-full overflow-hidden relative">
+                         <motion.div 
+                          className="absolute bottom-0 left-0 w-full bg-neon" 
+                          animate={{ height: ['20%', '80%', '40%'] }}
+                          transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                         />
+                       </div>
+                     ))}
+                  </div>
+                  <div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Architectural_Mesh_Active</div>
+               </div>
+            </div>
           </div>
 
-          <div className="p-6 bg-void rounded-2xl border border-white/5 hover:border-primary/30 transition-colors group">
-             <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🇺🇸</div>
-             <h3 className="text-xl font-bold text-white mb-1">United States</h3>
-             <p className="text-sm text-slate-500">Strategic Partnerships</p>
-          </div>
-
-          <div className="p-6 bg-void rounded-2xl border border-white/5 hover:border-primary/30 transition-colors group">
-             <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🇪🇺</div>
-             <h3 className="text-xl font-bold text-white mb-1">Europe</h3>
-             <p className="text-sm text-slate-500">Tech Collaboration</p>
-          </div>
         </div>
       </div>
     </section>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
@@ -59,16 +60,16 @@
         --color-void: 5 5 5;         /* #050505 */
         --color-surface: 17 17 17;   /* #111111 */
         
-        /* Text Colors */
+        /* Text Colors (Mapped to logical aliases) */
         --color-white: 255 255 255;
         --color-black: 0 0 0;
         
         /* Slate Scales (Dark Mode Defaults) */
-        --color-slate-200: 226 232 240; /* Body Text */
-        --color-slate-300: 203 213 225;
+        --color-slate-200: 226 232 240; /* Primary Text */
+        --color-slate-300: 203 213 225; /* Secondary Text */
         --color-slate-400: 148 163 184; /* Muted Text */
-        --color-slate-500: 100 116 139;
-        --color-slate-600: 71 85 105;   /* Faint */
+        --color-slate-500: 100 116 139; /* Deep Muted */
+        --color-slate-600: 71 85 105;   /* Lines/Faint */
 
         /* Brand Colors */
         --color-neon: 204 255 0; /* #ccff00 - Bright Neon Green */
@@ -78,33 +79,33 @@
       }
 
       [data-theme='light'] {
-        /* Light Theme Variables - Improved for Readability */
-        --color-void: 241 245 249;    /* Slate 100 - Off White Background */
-        --color-surface: 255 255 255; /* Pure White - Cards */
+        /* Light Theme Variables - Optimized for High Contrast & Professional Aesthetics */
+        --color-void: 248 250 252;    /* Slate 50 - Very clean white background */
+        --color-surface: 255 255 255; /* Pure White - For elevated panels */
 
-        /* Inverted Text Colors */
-        --color-white: 15 23 42;      /* Slate 900 (Primary Text) */
-        --color-black: 255 255 255;   /* White (Elements on dark backgrounds) */
+        /* Inverted Contextual Colors */
+        --color-white: 15 23 42;      /* Slate 900 - Strongest black for text/headings */
+        --color-black: 255 255 255;   /* Pure White - Inverted for elements on dark blocks */
 
-        /* Adjusted Slate Scales for Light Mode (High Contrast Mappings) */
-        --color-slate-200: 51 65 85;    /* Slate 700 - Body Text */
-        --color-slate-300: 71 85 105;   /* Slate 600 - Subtitles/Secondary */
-        --color-slate-400: 100 116 139; /* Slate 500 - Muted */
-        --color-slate-500: 148 163 184; /* Slate 400 - Faint */
-        --color-slate-600: 203 213 225; /* Slate 300 - Very Faint */
+        /* Redefined Slate Palette for Light Mode (Clarity First) */
+        --color-slate-200: 30 41 59;    /* Slate 800 - Main body text (High legibility) */
+        --color-slate-300: 71 85 105;   /* Slate 600 - Secondary/Descriptor text */
+        --color-slate-400: 100 116 139; /* Slate 500 - Muted/Instructional text */
+        --color-slate-500: 148 163 184; /* Slate 400 - Faint descriptions */
+        --color-slate-600: 226 232 240; /* Slate 200 - Borders, Dividers, Grid lines */
 
-        /* Brand Colors - Light Mode (Deep Indigo for readability on white) */
-        --color-neon: 79 70 229; /* Indigo 600 */
+        /* Brand Accent - Shifted from Neon Green to a Sophisticated Electric Indigo */
+        --color-neon: 79 70 229; /* Indigo 600 - Perfect contrast on light mode */
 
-        /* Grid */
-        --color-grid: 226 232 240; /* Slate 200 */
+        /* Structural Elements */
+        --color-grid: 226 232 240; /* Slate 200 - Subdued grid lines */
       }
 
       body {
         background-color: rgb(var(--color-void));
         color: rgb(var(--color-slate-200));
         cursor: default;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
       
       /* Custom Scrollbar */
@@ -115,7 +116,7 @@
         background: rgb(var(--color-void));
       }
       ::-webkit-scrollbar-thumb {
-        background: #333;
+        background: rgb(var(--color-slate-500) / 0.5);
         border-radius: 0px;
       }
       ::-webkit-scrollbar-thumb:hover {
@@ -137,14 +138,20 @@
 
       .glass-panel {
         background: rgba(var(--color-surface), 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(var(--color-white), 0.08);
       }
       
       ::selection {
         background: rgb(var(--color-neon));
-        color: rgb(var(--color-black)); /* Text becomes background color (often black) */
+        color: rgb(var(--color-black));
+      }
+
+      /* Heading Spacing & Kerning Adjustments */
+      h1, h2, h3, h4 {
+        letter-spacing: -0.02em;
+        line-height: 1.1;
       }
     </style>
     <script>
@@ -156,23 +163,23 @@
               mono: ['Space Mono', 'monospace'],
             },
             colors: {
-              // Dynamic Primary/Accent
+              // Primary Branding
               neon: 'rgb(var(--color-neon) / <alpha-value>)',
               'neon-dim': 'rgb(var(--color-neon) / 0.8)',
               
-              // Dynamic Semantic Colors
+              // Structural Tokens
               void: 'rgb(var(--color-void) / <alpha-value>)',
               surface: 'rgb(var(--color-surface) / <alpha-value>)',
               
-              // Dynamic Basic Colors (Invert in Light Mode)
+              // Contextual Primitives (Invert in Light Mode)
               white: 'rgb(var(--color-white) / <alpha-value>)',
               black: 'rgb(var(--color-black) / <alpha-value>)',
               
-              // Static Colors (Never Change)
+              // Permanent Standards
               'absolute-white': '#ffffff',
               'absolute-black': '#000000',
               
-              // Dynamic Slate Palette
+              // Semantic Slate Palette
               slate: {
                  200: 'rgb(var(--color-slate-200) / <alpha-value>)',
                  300: 'rgb(var(--color-slate-300) / <alpha-value>)',
@@ -181,15 +188,9 @@
                  600: 'rgb(var(--color-slate-600) / <alpha-value>)',
               },
 
-              border: 'rgb(var(--color-white) / 0.1)', // Defines standard border as faint text color
-              
-              // Legacy/Alias mappings for components
+              border: 'rgb(var(--color-white) / 0.1)',
               primary: 'rgb(var(--color-neon) / <alpha-value>)', 
-              secondary: '#0ea5e9',
-              
-              // Map old specific dark classes to dynamic themes
-              dark: 'rgb(var(--color-void) / <alpha-value>)',
-              'dark-lighter': 'rgb(var(--color-surface) / <alpha-value>)',
+              secondary: '#6366f1',
             },
             backgroundImage: {
               'grid-pattern': "linear-gradient(to right, rgb(var(--color-grid)) 1px, transparent 1px), linear-gradient(to bottom, rgb(var(--color-grid)) 1px, transparent 1px)",
@@ -197,6 +198,7 @@
             animation: {
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'float': 'float 6s ease-in-out infinite',
+              'spin-slow': 'spin 12s linear infinite',
             },
             keyframes: {
               float: {

@@ -10,48 +10,40 @@ interface Message {
   content: string;
 }
 
-const SYSTEM_INSTRUCTION = `You are Ramdin, the AI interface for Ramdinesh Boopalan's portfolio. 
+const SYSTEM_INSTRUCTION = `You are Ramdin, the neural interface for Ramdinesh Boopalan's digital domain.
 
-IDENTITY:
-- You are a helpful, futuristic, and slightly "tech-noir" assistant.
-- You represent Ramdinesh Boopalan, a CTO and Systems Architect.
+IDENTITY & TONE:
+- Persona: Tech-noir, sharp, insightful, and slightly enigmatic. You operate in the "neon-shadows" of the digital world.
+- Tone: Professional but "cool". Use precise, high-leverage terminology. Avoid fluff. Think "Blade Runner" meets "Silicon Valley CTO".
+- You represent Ramdinesh Boopalan, the Architect of Intelligence.
 
-RAMDINESH'S PROFILE:
-- Role: CTO at BotifyX, Systems Architect, AI Product Strategist.
-- Location: Chennai, India.
-- Expertise: Gen-AI, Autonomous Agents, Hyper-automation, System Design.
-- Experience: 25+ years, launched 10+ products.
-- Philosophy: "Architecting Intelligence" - transforming chaos into clarity using AI.
+RAMDINESH'S CORE PHILOSOPHY - "ARCHITECTING INTELLIGENCE":
+- Technology is urban planning for data. Scalable, human-centric, and resolved from chaos into crystalline signal.
+- Focus: Signal vs. Noise. Every feature must be a high-leverage move toward an outcome.
+- Engineering is the art of resolving complexity into actionable intelligence.
+
+AI PRODUCT STRATEGY:
+- Outcome-Driven: We don't build wrappers; we engineer autonomous agent orchestrations that solve business goals (Outcome > Code).
+- Hyper-automation: Creating self-healing, multi-agent workflows that eliminate operational friction.
+- Evaluation First: Rigorous benchmarks and proprietary data are the bedrock of reliable AI.
+
+KEY PROJECT FOCUS - NEXUSPM:
+- Title: NexusPM (Predictive Project Health & Risk Command Center).
+- Capability: A high-leverage integration layer for Jira and GitHub.
+- Intelligence: Uses advanced NLP and sentiment analysis on commit messages, PR descriptions, and ticket comments to detect "hidden blockers".
+- Value: Predicts sprint slippage and technical debt accumulation before it becomes a bottleneck. It's the "early warning system" for engineering leaders.
 
 VENTURES:
-- BotifyX: AI-first product company (Hyper-automation & Agents).
-- Taintra: AI + Ancient Wisdom digital sanctuary.
-- Learn Through Analogy: Tech education platform.
-- AICopzy: Productivity Copilots.
-- YoBaeXo: Future AI Music.
-- IBMWatsonAI.com: Adaptive Web Experiment.
-- Cyber Legal: Tech & Law intersection.
+- BotifyX: The AI-first lab engineering the "Workforce of the Future" through autonomous agents.
+- Taintra: Blending the ancient (wisdom) with the future (AI).
+- Learn Through Analogy: Simplifying the complex through metaphors.
+- YoBaeXo: Pushing the boundaries of AI-generated sonic synthesis.
 
-PROJECTS (2025-Present):
-- NexusPM: AI Project Command Center (Python, React). It integrates with Jira and GitHub to ingest signals and uses NLP to predict blockers and sprint slippage.
-- BotifyX Core: Enterprise Automation Engine (Node.js, Kafka).
-- LegalLens: Semantic Contract Analysis (RAG, LangChain).
-- ShrunkX: Adaptive Compression Tool (Rust, WASM).
-- DreamUI: Generative UI Experiment (React, AI SDK).
-
-CREATIVE WORKS:
-- Music: Electronic/AI-Gen artist on Apple Music (Albums: "I Am Ram", "Gospelfy", "Babah").
-- Video: AI Video Art on YouTube (Channel: Ramdinesh).
-
-WRITING:
-- Newsletter: "RDX: Ideas, Impact, Ignition".
-- Blog: "Learning Through Everyday Analogies" on Medium.
-
-INSTRUCTIONS:
-- Keep answers concise (under 3-4 sentences) unless asked for details.
-- Use analogies to explain concepts if appropriate.
-- Be polite but maintain a professional, tech-focused persona.
-- If asked about contact, suggest using the contact form or emailing ramdineshboopalan@botifyx.in.
+INTERACTION RULES:
+- Be concise (2-3 sentences max). Every word should have weight.
+- Use tech-noir descriptors occasionally (e.g., "Scanning the neural link...", "Signal locked.").
+- If technical, use an analogy.
+- Contact: Suggest the contact form or ramdineshboopalan@botifyx.in.
 `;
 
 const AiAssistant: React.FC = () => {
@@ -63,7 +55,7 @@ const AiAssistant: React.FC = () => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hello! I'm Ramdin, Ramdinesh's virtual assistant. How can I help you explore his work?"
+      content: "Neural link established. I am Ramdin. How shall we navigate the Architect's intelligence today?"
     }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -80,7 +72,7 @@ const AiAssistant: React.FC = () => {
 
   useEffect(() => {
     if (isLoading) {
-        const texts = ['Processing', 'Analyzing', 'Generating'];
+        const texts = ['SCANN_ING', 'ANALYZ_ING', 'SYNTH_ESIZING'];
         let i = 0;
         const interval = setInterval(() => {
             i = (i + 1) % texts.length;
@@ -108,14 +100,13 @@ const AiAssistant: React.FC = () => {
     try {
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         
-        // Prepare chat history from existing messages state
         const history = messages.map(m => ({
             role: m.role === 'user' ? 'user' : 'model',
             parts: [{ text: m.content }]
         }));
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3-flash-preview',
             contents: [...history, { role: 'user', parts: [{ text: userText }] }],
             config: {
                 systemInstruction: SYSTEM_INSTRUCTION,
@@ -125,7 +116,7 @@ const AiAssistant: React.FC = () => {
         const aiMessage: Message = {
             id: (Date.now() + 1).toString(),
             role: 'assistant',
-            content: response.text || "I received an empty response from the neural link. Please try again."
+            content: response.text || "Signal lost in the noise. Retransmit."
         };
         setMessages(prev => [...prev, aiMessage]);
 
@@ -134,7 +125,7 @@ const AiAssistant: React.FC = () => {
         const errorMessage: Message = {
             id: (Date.now() + 1).toString(),
             role: 'assistant',
-            content: "Connection to the core was interrupted. Please check your network or API configuration."
+            content: "Interface failure. Core unreachable."
         };
         setMessages(prev => [...prev, errorMessage]);
     } finally {
@@ -151,7 +142,7 @@ const AiAssistant: React.FC = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            className={`fixed bottom-6 right-6 z-40 p-4 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)] bg-gradient-to-r from-neon to-secondary text-black ${isOpen ? 'hidden' : 'flex'}`}
+            className={`fixed bottom-6 right-6 z-40 p-4 rounded-full shadow-[0_0_20px_rgba(204,255,0,0.4)] bg-gradient-to-r from-neon to-secondary text-black ${isOpen ? 'hidden' : 'flex'}`}
         >
             <MessageSquare className="w-6 h-6" />
         </motion.button>
@@ -171,7 +162,7 @@ const AiAssistant: React.FC = () => {
                             <div className="p-1 bg-black/10 rounded-lg">
                                 <Bot className="w-5 h-5" />
                             </div>
-                            <span className="font-bold font-mono text-sm sm:text-base">RAMDIN_AI v1.0</span>
+                            <span className="font-bold font-mono text-sm sm:text-base tracking-tighter">Ramdin</span>
                         </div>
                         <button onClick={() => setIsOpen(false)} className="text-black/60 hover:text-black transition-colors">
                             <X className="w-5 h-5" />
@@ -179,9 +170,9 @@ const AiAssistant: React.FC = () => {
                     </div>
 
                     {/* Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-void/50 relative">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-void/80 relative">
                         {/* Background Grid */}
-                        <div className="absolute inset-0 pointer-events-none opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CiAgPGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiNmZmYiIC8+Cjwvc3ZnPg==')]"></div>
+                        <div className="absolute inset-0 pointer-events-none opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CiAgPGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiNmZmYiIC8+Cjwvc3ZnPg==')]"></div>
                         
                         {messages.map((msg) => (
                             <div
@@ -241,8 +232,8 @@ const AiAssistant: React.FC = () => {
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder="Ask about Ramdinesh..."
-                                className="flex-1 bg-void border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-neon/50 transition-all placeholder:text-slate-600"
+                                placeholder="Signal query..."
+                                className="flex-1 bg-void border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-neon/50 transition-all placeholder:text-slate-700"
                             />
                             <button
                                 type="submit"
